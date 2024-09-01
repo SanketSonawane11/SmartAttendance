@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 
-
 const userSchema = mongoose.Schema({
     firstName: {
         type: String,
@@ -65,16 +64,24 @@ const userSchema = mongoose.Schema({
         max: 100,
     },
     faceData: {
-        type: Buffer,
+        type: String,
         required: true,
     },
     workingHour: {
         type: Number,
-        required: true,
         max: 20,
     },
+    organization: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Organization',
+        required: true,
+    },
+    attendanceRecords: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Attendance'
+    }],
 });
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model('User', userSchema);
 
 module.exports = User;
