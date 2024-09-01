@@ -71,15 +71,15 @@ const userSchema = mongoose.Schema({
         type: Number,
         max: 20,
     },
-    organization: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Organization',
-        required: true,
-    },
     attendanceRecords: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Attendance'
     }],
+    company: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Organization',
+        required: true,
+    },
 });
 
 const User = mongoose.model('User', userSchema);
