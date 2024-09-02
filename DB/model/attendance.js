@@ -12,7 +12,7 @@ const calculateWorkingHours = (checkInTime, checkOutTime) => {
 };
 
 const attendanceSchema = mongoose.Schema({
-    employee: {
+    users: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true,

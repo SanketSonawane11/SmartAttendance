@@ -40,7 +40,9 @@ router.post('/register', async (req, res) => {
         });
 
         await newUser.save();
-
+        console.log(company.users)
+        company.users.push(newUser._id);
+        await company.save();
         const token = jwt.sign({ email }, secret);
         res.status(201).json({ message: "User registered successfully", token, user: newUser });
     } catch (err) {
@@ -75,14 +77,17 @@ router.post('/updateAttendance', async (req, res) => {
 
     try {
         // Find the user by email
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email }).populate('company');
         if (!user) {
             return res.status(400).json({ message: "User not found" });
         }
 
-        // Find existing attendance record for the date
-        let attendance = await Attendance.findOne({ employee: user._id, date: new Date(date) });
+        // Retrieve user's organization ID
+        // console.log(user)
+        const organizationId = user.company._id;
 
+        // Find existing attendance record for the date
+        let attendance = await Attendance.findOne({ users: user._id, date: new Date(date) });
         if (attendance) {
             // If check-in time is provided and it's earlier than the existing check-in time, update it
             if (checkInTime && (!attendance.checkInTime || new Date(checkInTime) < attendance.checkInTime)) {
@@ -98,8 +103,8 @@ router.post('/updateAttendance', async (req, res) => {
         } else {
             // If no existing record, create a new attendance entry
             attendance = new Attendance({
-                employee: user._id,
-                organization: user.organization,
+                users: user._id,
+                organization: organizationId,
                 date: new Date(date),
                 checkInTime: checkInTime ? new Date(checkInTime) : undefined,
                 checkOutTime: checkOutTime ? new Date(checkOutTime) : undefined,
@@ -117,5 +122,6 @@ router.post('/updateAttendance', async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 });
+
 
 module.exports = router;
